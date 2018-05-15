@@ -41,6 +41,17 @@ public class CategoryController {
 		Category category = repo.findById(categoryId).orElse(null);
 		return new ResponseEntity<>(category, HttpStatus.OK);
 	}
+
+	@RequestMapping(value = "/categories/{categoryId}", method = RequestMethod.PUT)
+	public ResponseEntity<?> updateCategory(@RequestBody Category category) {
+		category = repo.save(category);
+		// Set the location header for the newly created resource
+		HttpHeaders responseHeaders = new HttpHeaders();
+		URI newCategoryUri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(category.getId())
+				.toUri();
+		responseHeaders.setLocation(newCategoryUri);
+		return new ResponseEntity<>(null, responseHeaders, HttpStatus.CREATED);
+	}
 	
 	@RequestMapping(value = "/categories/{categoryId}", method = RequestMethod.DELETE)
 	public ResponseEntity<Category> deleteUser(@PathVariable Long categoryId) {
